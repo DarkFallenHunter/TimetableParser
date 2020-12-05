@@ -95,11 +95,10 @@ class TimetableParser:
                  self,
                  merged_cell_class,
                  teachers_list,
-                 min_row=4,
                  teacher_col_name='ФИО преподавателя'
                 ):
         self.__merged_cell_class = merged_cell_class
-        self.__min_row = min_row
+        self.__min_row = 4  # Перенести в файл конфига
         self.__teacher_col_name = teacher_col_name
         self.__teachers_list = teachers_list
 
@@ -203,19 +202,11 @@ class TimetableParser:
 
     @classmethod
     def __parse_few_cls_names(cls, cls_names, class_type, classroom, week):
-        prefix, class_name, postfix = re.search(
-            r'([\d,н\s.-]*)([А-Яа-я. -]+)(\s?.*)',
-            cls_names[0] if len(cls_names[0]) > len(cls_names[1])
-            else cls_names[1]
-        ).groups()
-        weeks = prefix or postfix
-        str_weeks = [week.strip() for week in [weeks, *cls_names[1:]]]
-        cls_names = [f"{class_name} {str_week}" for str_week in str_weeks]
         values = []
 
         for cls_name in cls_names:
             week_parity = cls.__get_str_week_parity(week)
-            weeks, clear_cls_name = WeeksParser.parse_subject_and_weeks(
+            clear_cls_name, weeks = WeeksParser.parse_subject_and_weeks(
                 cls_name, week_parity
             )
             values.append({
